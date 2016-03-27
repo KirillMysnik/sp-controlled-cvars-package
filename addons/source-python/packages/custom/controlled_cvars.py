@@ -17,7 +17,7 @@ class ControlledConfigManager(AutoUnload, ConfigManager):
         self._saved_values = {}
         self._handlers = {}
 
-    def cvar(self, handler, name, default=0, description='', flags=0,
+    def controlled_cvar(self, handler, name, default=0, description='', flags=0,
              min_value=None, max_value=None):
 
         flags |= ConVarFlags.NOTIFY
@@ -39,7 +39,7 @@ class ControlledConfigManager(AutoUnload, ConfigManager):
 
         return cvar
 
-    def cvar_changed(self, cvar):
+    def _cvar_changed(self, cvar):
         name = cvar.name[len(self.cvar_prefix):]
         try:
             value = self._handlers[name](cvar)
@@ -68,7 +68,7 @@ def on_server_cvar(game_event):
 
     cvar, config_manager = cvar_mapping[game_event['cvarname']]
 
-    if config_manager.cvar_changed(cvar):
+    if config_manager._cvar_changed(cvar):
         echo_console("Variable was updated successfully")
 
     else:
