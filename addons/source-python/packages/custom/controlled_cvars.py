@@ -1,7 +1,6 @@
 from config.manager import ConfigManager
 from core import AutoUnload, echo_console
-from cvars.flags import ConVarFlags
-from events import Event
+from listeners import OnConVarChanged
 
 
 class InvalidValue(Exception):
@@ -20,7 +19,6 @@ class ControlledConfigManager(AutoUnload, ConfigManager):
     def controlled_cvar(self, handler, name, default=0, description='', flags=0,
              min_value=None, max_value=None):
 
-        flags |= ConVarFlags.NOTIFY
         cvar = super().cvar(
             name, default, description, flags, min_value, max_value)
 
@@ -35,7 +33,7 @@ class ControlledConfigManager(AutoUnload, ConfigManager):
             raise ValueError(
                 "'{}' already has a handler attached".format(cvar.name))
 
-        cvar_mapping[cvar.name] = cvar, self
+        cvar_mapping[cvar.name] = self
 
         return cvar
 
@@ -61,12 +59,12 @@ class ControlledConfigManager(AutoUnload, ConfigManager):
 cvar_mapping = {}
 
 
-@Event('server_cvar')
-def on_server_cvar(game_event):
-    if game_event['cvarname'] not in cvar_mapping:
+@OnConVarChanged
+def listener_on_con_var_changed(cvar, old_value):
+    if cvar.name not in cvar_mapping:
         return
 
-    cvar, config_manager = cvar_mapping[game_event['cvarname']]
+    config_manager = cvar_mapping[cvar.name]
 
     if config_manager._cvar_changed(cvar):
         echo_console("Variable was updated successfully")
