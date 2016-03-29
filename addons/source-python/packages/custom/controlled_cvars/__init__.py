@@ -16,8 +16,8 @@ class ControlledConfigManager(AutoUnload, ConfigManager):
         self._saved_values = {}
         self._handlers = {}
 
-    def controlled_cvar(self, handler, name, default=0, description='', flags=0,
-             min_value=None, max_value=None):
+    def controlled_cvar(self, handler, name, default=0, description='',
+                        flags=0, min_value=None, max_value=None):
 
         cvar = super().cvar(
             name, default, description, flags, min_value, max_value)
