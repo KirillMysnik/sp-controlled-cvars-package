@@ -67,7 +67,9 @@ def listener_on_con_var_changed(cvar, old_value):
     config_manager = cvar_mapping[cvar.name]
 
     if config_manager._cvar_changed(cvar):
-        echo_console("Variable was updated successfully")
+        echo_console(
+            "'{}': Variable was updated successfully".format(cvar.name))
 
     else:
-        echo_console("Failed to update variable with the given value")
+        echo_console("'{}': Failed to update variable with "
+                     "the given value".format(cvar.name))
